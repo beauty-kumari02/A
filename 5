@@ -1,0 +1,192 @@
+Q)DETERMINE PATH USING BFS
+% Graph edges
+edge(a, b).
+edge(a, c).
+edge(b, d).
+edge(b, e).
+edge(c, f).
+edge(c, g).
+% bfs(Start, Goal, Path)
+bfs(Start, Goal, Path) :-
+    bfs_queue([[Start]], Goal, RevPath),
+    reverse(RevPath, Path).
+
+% Case 1: Goal found (head of current path is the goal)
+bfs_queue([[Goal|RestPath]|_], Goal, [Goal|RestPath]).
+
+% Case 2: Expand first path and enqueue new paths
+bfs_queue([[Node|RestPath]|OtherPaths], Goal, Path) :-
+    findall([Next,Node|RestPath],
+            (edge(Node, Next), \+ member(Next, [Node|RestPath])),
+            NewPaths),
+    append(OtherPaths, NewPaths, UpdatedQueue),
+    bfs_queue(UpdatedQueue, Goal, Path).
+
+ ?- bfs(a, g, Path).
+Path = [a, c, g].
+
+?- bfs(a, e, Path).
+Path = [a, b, e].
+
+
+
+Q)DETERMINE PATH USING DFS
+% dfs(Start, Goal, Path)
+dfs(Start, Goal, Path) :-
+    dfs_path(Start, Goal, [Start], RevPath),
+    reverse(RevPath, Path).
+
+% Case 1: If Start = Goal, return the path
+dfs_path(Goal, Goal, Path, Path).
+
+% Case 2: Explore neighbors recursively
+dfs_path(Node, Goal, Visited, Path) :-
+    edge(Node, Next),
+    \+ member(Next, Visited),      % avoid cycles
+    dfs_path(Next, Goal, [Next|Visited], Path).
+
+?- dfs(a, e, Path).
+Path = [a, b, e] .
+
+?- dfs(a, g, Path).
+Path = [a, c, g] 
+
+
+Q)COUNT PATH BETWEEN START AND GOAL
+% node(Current, [List of Neighbors])
+node(a, [b, c]).
+node(b, [d, e]).
+node(c, [f, g]).
+node(d, [g]).
+node(e, [g]).
+node(f, []).
+node(g, []).
+
+
+% --- Count simple paths between Start and Goal ---
+count_paths(Start, Goal, Count) :-
+    findall(1, simple_path(Start, Goal, [Start]), Ones),
+    length(Ones, Count).
+
+% --- A simple path: DFS avoiding revisits ---
+simple_path(Node, Node, _Visited).
+simple_path(Node, Goal, Visited) :-
+    node(Node, Neighbors),
+    member(Next, Neighbors),
+    \+ member(Next, Visited),
+    simple_path(Next, Goal, [Next|Visited]).
+
+?- count_paths(a, g, N).
+N = 3.
+
+?- count_paths(a, e, N).
+N = 1.
+
+
+
+
+Q)SHORTEST PATH BETWEEN START AND GOAL
+% node1(Current, [Neighbors])
+node1(a, [b, c]).
+node1(b, [d, e]).
+node1(c, [f, g]).
+node1(d, [g]).
+node1(e, [g]).
+node1(f, []).
+node1(g, []).
+
+
+% shortest_path(Start, Goal, Path)
+shortest_path(Start, Goal, Path) :-
+    bfs([[Start]], Goal, RevPath),
+    reverse(RevPath, Path).
+
+% Case 1: Found the goal at the head of a path
+bfs([[Goal|Rest]|_], Goal, [Goal|Rest]).
+
+% Case 2: Expand the first path, enqueue neighbors
+bfs([[Node|Rest]|OtherPaths], Goal, Path) :-
+    node1(Node, Neighbors),
+    findall([Next,Node|Rest],
+            (member(Next, Neighbors),
+             \+ member(Next, [Node|Rest])),   % avoid cycles
+            NewPaths),
+    append(OtherPaths, NewPaths, UpdatedQueue),
+    bfs(UpdatedQueue, Goal, Path).
+
+?- shortest_path(a, g, Path).
+Path = [a, c, g] ;
+Path = [a, b, d, g] ;
+Path = [a, b, e, g] ;
+false.
+
+
+
+
+
+% ---------- Graph (example) ----------
+% node1(Current, [Neighbors]).
+node1(a,[b,c]).
+node1(b,[d,e]).
+node1(c,[f,g]).
+node1(d,[g]).
+node1(e,[g]).
+node1(f,[]).
+node1(g,[a]).
+
+% ---------- Does the directed graph contain a cycle? ----------
+has_cycle :-
+    node1(Start,_),
+    cycle_from(Start, [], []),     % Visited=[], Stack=[]
+    !.
+
+% DFS with recursion stack:
+% cycle_from(Node, Visited, Stack)
+cycle_from(Node, Visited, Stack) :-
+    (   member(Node, Stack)              % back-edge ⇒ cycle
+    ->  true
+    ;   member(Node, Visited)            % already fully explored
+    ->  fail
+    ;   node1(Node, Neigh),
+        (   member(Next, Neigh),
+            cycle_from(Next, [Node|Visited], [Node|Stack])
+        )
+    ).
+
+% ---------- Find and return ONE concrete directed cycle as a node list ----------
+% e.g., Cycle = [v1, v2, ..., v1]
+find_cycle(Cycle) :-
+    node1(Start,_),
+    dfs_cycle(Start, [], [], Cycle),
+    !.
+
+dfs_cycle(Node, Visited, Stack, Cycle) :-
+    node1(Node, Neigh),
+    member(Next, Neigh),
+    (   member(Next, [Node|Stack])          % found a back-edge to 'Next'
+    ->  take_until(Next, [Node|Stack], Prefix),
+        Cycle = [Next | Prefix]              % closes the cycle: Next ... Node Next
+    ;   \+ member(Next, Visited),
+        dfs_cycle(Next, [Node|Visited], [Node|Stack], Cycle)
+    ).
+
+% take_until(Elem, List, PrefixIncludingElemAtEnd)
+take_until(E, [E|_], [E]) :- !.
+take_until(E, [H|T], [H|R]) :-
+    take_until(E, T, R).
+
+
+
+?- has_cycle.
+false.
+
+?- find_cycle(C).
+false.
+
+
+
+?- find_cycle(C).
+C = [a, g, d, b, a].
+
+?- has_cycle.
+true.

@@ -1,0 +1,139 @@
+Q1️⃣ Fibonacci Series in Prolog
+Program written
+fib(0,0).
+fib(1,1).
+fib(N,F) :-
+    N > 1,
+    N1 is N-1,
+    N2 is N-2,
+    fib(N1,R1),
+    fib(N2,R2),
+    F is R1 + R2.
+
+Explanation
+
+fib(0,0) → 0th Fibonacci number is 0
+
+fib(1,1) → 1st Fibonacci number is 1
+
+For N > 1:
+
+Fibonacci(N) = Fibonacci(N−1) + Fibonacci(N−2)
+
+Prolog uses recursion to compute the value.
+
+Query
+?- fib(5, N).
+
+Output
+N = 5
+
+
+(Sequence: 0, 1, 1, 2, 3, 5)
+
+Q2️⃣ Power of a Number
+Program
+power(Num, 0, Ans) :- Ans is 1.
+power(Num, Pow, Ans) :-
+    Pow > 0,
+    P is Pow - 1,
+    power(Num, P, Ans1),
+    Ans is Ans1 * Num.
+
+Explanation
+
+Any number raised to power 0 is 1
+
+Otherwise:
+
+Reduce power by 1
+
+Multiply result recursively
+
+Query
+?- power(2, 3, Ans).
+
+Output
+Ans = 8
+
+Q3️⃣ Check Even or Odd Number
+Program
+evenodd(N) :-
+    N > 0,
+    N mod 2 =:= 0,
+    write('even').
+
+evenodd(N) :-
+    N > 0,
+    N mod 2 =\=0,
+    write('odd').
+
+Explanation
+
+Uses mod operator
+
+If remainder is 0 → even
+
+If remainder is 1 → odd
+
+Query
+?- evenodd(4).
+
+Output
+even
+true
+
+Q4️⃣ Arithmetic Operations in Prolog
+Program
+sum(X,Y,S) :-
+    S is X + Y,
+    write(S).
+
+sub(X,Y,S) :-
+    S is X - Y,
+    write(S).
+
+mult(X,Y,S) :-
+    S is X * Y,
+    write(S).
+
+division(X,Y,S) :-
+    S is X / Y,
+    write(S).
+
+✔ Sample Queries and Outputs (left page)
+➤ Addition
+?- sum(5,7).
+
+
+Output:
+
+12
+true
+
+➤ Subtraction
+?- sub(7,31).
+
+
+Output:
+
+-24
+true
+
+➤ Multiplication
+?- mult(7,31).
+
+
+Output:
+
+217
+true
+
+➤ Division
+?- division(78,2).
+
+
+Output:
+
+39
+true

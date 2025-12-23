@@ -1,0 +1,105 @@
+1️⃣ Check whether an element is present in a list
+Code
+isPresent(X, [X|T]).
+isPresent(X, [H|T]) :- isPresent(X, T).
+
+Explanation
+
+[X|T] → head of list is X, so element is found
+
+Otherwise, check recursively in the tail T
+
+Query
+?- isPresent(5, [2,8,9,5,12]).
+
+Output
+true
+
+
+✔ Because 5 exists in the list.
+
+2️⃣ Sum of all elements in a list
+Code
+sum([], 0).
+sum([H|T], S) :-
+    sum(T, S1),
+    S is H + S1.
+
+Explanation
+
+Base case: empty list → sum = 0
+
+Recursive case: add head H to sum of tail
+
+Query
+?- sum([5,22,45,90,74], S).
+
+Output
+S = 296
+
+
+✔ 5 + 22 + 45 + 90 + 74 = 296
+
+3️⃣ Concatenate two lists
+Code
+conc([], L, L).
+conc([H|T], L2, [H|L3]) :-
+    conc(T, L2, L3).
+
+Explanation
+
+If first list is empty → result is second list
+
+Otherwise:
+
+Keep head H
+
+Recursively concatenate tail
+
+Query
+?- conc([1,5,3], [13,78,43], T).
+
+Output
+T = [1,5,3,13,78,43]
+
+4️⃣ Reverse a list
+Code
+revlist([], []).
+revlist([H|T], R) :-
+    revlist(T, R1),
+    conc(R1, [H], R).
+
+Explanation
+
+Reverse the tail
+
+Append head at the end
+
+Uses conc/3
+
+Query
+?- revlist([17,6,42,88,31], R).
+
+Output
+R = [31,88,42,6,17]
+
+5️⃣ Check whether a list is a palindrome
+Code
+palindrome(L) :-
+    revlist(L, R),
+    L = R.
+
+Explanation
+
+Reverse the list
+
+If original list equals reversed list → palindrome
+
+Query
+?- palindrome([1,2,1]).
+
+Output
+true
+
+
+✔ [1,2,1] reads the same forwards and backwards.

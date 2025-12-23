@@ -1,0 +1,109 @@
+Q5️⃣ Check whether a number is Prime
+Program in your notebook
+is_prime(N) :-
+    N > 1,
+    \+ ( between(2, N-1, X),
+         N mod X =:= 0 ).
+
+Explanation
+
+N > 1 → prime numbers start from 2
+
+between(2, N-1, X) → checks all numbers between 2 and N−1
+
+N mod X =:= 0 → checks divisibility
+
+\+ → negation (means “not”)
+
+👉 If no number divides N, then N is prime.
+
+Queries and Outputs (left page)
+?- is_prime(2).
+true
+
+
+✔ 2 is prime
+
+?- is_prime(10).
+false
+
+
+✔ 10 is divisible by 2 and 5
+
+Q6️⃣ Convert Celsius to Fahrenheit
+Program
+c2f(C) :-
+    F is (C * 9 / 5) + 32,
+    write(F).
+
+Explanation
+
+Formula:
+
+𝐹
+=
+9
+5
+𝐶
++
+32
+F=
+5
+9
+	​
+
+C+32
+
+is → arithmetic evaluation
+
+write(F) → prints the result
+
+Queries and Outputs
+?- c2f(22).
+71.6
+true
+
+?- c2f(-4).
+24.8
+true
+
+?- c2f(0).
+32
+true
+
+
+✔ All outputs follow the Celsius → Fahrenheit formula correctly.
+
+Q7️⃣ GCD (Greatest Common Divisor)
+Program in your notebook
+gcd(X, X, X).
+gcd(X, Y, D) :-
+    X < Y,
+    gcd(Y, X, D).
+gcd(X, Y, D) :-
+    X > Y,
+    X1 is X - Y,
+    gcd(X1, Y, D).
+
+Explanation
+
+This uses Euclid’s subtraction method:
+
+If both numbers are equal → that number is GCD
+
+If X < Y → swap
+
+If X > Y → subtract smaller from larger
+
+Queries and Outputs
+?- gcd(5, 5, D).
+D = 5
+
+?- gcd(17, 5, D).
+D = 1
+
+?- gcd(51, 17, D).
+D = 17
+
+
+✔ Correct according to mathematics.

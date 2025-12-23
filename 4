@@ -1,0 +1,165 @@
+conc([], L, L).
+conc([H|T], L2, [H|R]) :-
+    conc(T, L2, R).
+
+revlist([], []).
+revlist([H|T], R) :-
+    revlist(T, R1),
+    conc(R1, [H], R).
+
+palindrome(L) :-
+    revlist(L, R),
+    L = R.
+
+
+1. Maximum element in a list
+Code (clean version)
+max_list([X], X).
+max_list([H|T], Max) :-
+    max_list(T, MaxT),
+    ( H > MaxT -> Max = H ; Max = MaxT ).
+
+Example query
+?- max_list([3,9,2,7], M).
+M = 9.
+
+📌 Explanation (very simple)
+
+[H|T] means:
+
+H = first element (Head)
+
+T = remaining list (Tail)
+
+Base case
+max_list([X], X).
+
+
+👉 If the list has only one element, that element is the maximum.
+
+Recursive case
+max_list([H|T], Max) :-
+    max_list(T, MaxT),
+    ( H > MaxT -> Max = H ; Max = MaxT ).
+
+
+Steps:
+
+Find maximum of the tail → MaxT
+
+Compare H and MaxT
+
+Bigger one becomes Max
+
+🔹 2. Print numbers from N down to 1
+Code
+print_down(0).
+print_down(N) :-
+    N > 0,
+    write(N), nl,
+    N1 is N - 1,
+    print_down(N1).
+
+Example
+?- print_down(5).
+5
+4
+3
+2
+1
+true.
+
+📌 Explanation
+
+write(N) → prints number
+
+nl → new line
+
+is → evaluates arithmetic
+
+Base case
+print_down(0).
+
+
+👉 Stop when number becomes 0
+
+Recursive case
+print_down(N) :-
+    N > 0,
+    write(N),
+    N1 is N - 1,
+    print_down(N1).
+
+
+👉 Prints N, then calls itself with N-1
+
+🔹 3. Count occurrences of an element in a list
+Code
+count(_, [], 0).
+
+count(X, [X|T], N) :-
+    count(X, T, N1),
+    N is N1 + 1.
+
+count(X, [_|T], N) :-
+    count(X, T, N).
+
+Example
+?- count(1, [1,2,4,1,3,5,0,1,2,5,1], N).
+N = 4.
+
+📌 Explanation
+
+We want to count how many times X appears.
+
+Base case
+count(_, [], 0).
+
+
+👉 Empty list → count is 0
+
+Case 1: Head equals X
+count(X, [X|T], N) :-
+    count(X, T, N1),
+    N is N1 + 1.
+
+
+👉 Found one occurrence → add 1
+
+Case 2: Head is NOT X
+count(X, [_|T], N) :-
+    count(X, T, N).
+
+
+👉 Ignore head, continue
+
+🔹 4. Length of a list
+Code
+list_length([], 0).
+
+list_length([_|T], N) :-
+    list_length(T, N1),
+    N is N1 + 1.
+
+Example
+?- list_length([1,5,7,9,3,6,4], L).
+L = 7.
+
+📌 Explanation
+Base case
+list_length([], 0).
+
+
+👉 Empty list has length 0
+
+Recursive case
+list_length([_|T], N) :-
+    list_length(T, N1),
+    N is N1 + 1.
+
+
+_ means “I don’t care about this value”
+
+Count tail length
+
+Add 1 for current element

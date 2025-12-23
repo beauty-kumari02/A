@@ -1,0 +1,84 @@
+WATER JUG PROBLEM:
+/* Water Jug Problem */
+
+/* Capacities of the jugs */
+capacity(a, 4).
+capacity(b, 3).
+
+/* Target amount to reach */
+target(2).
+
+/* Solve the problem starting from (0,0) */
+solve :-
+    target(Target),
+    capacity(a, CapA),
+    capacity(b, CapB),
+    bfs([[(0,0),[]]], [], Target, CapA, CapB, Solution),
+    reverse(Solution, Path),
+    print_solution(Path).
+
+/* Breadth First Search (BFS) */
+
+/* Base case: if either jug has the target amount */
+bfs([[(X,Y),Path]|_], _, Target, _, _, [(X,Y)|Path]) :-
+    ( X =:= Target ; Y =:= Target ).
+
+/* BFS recursive step: explore next states */
+bfs([[(X,Y),Path]|Rest], Visited, Target, CapA, CapB, Solution) :-
+    findall(
+        [(NX,NY),[(X,Y)|Path]],
+        ( move((X,Y),(NX,NY),CapA,CapB),
+          \+ member((NX,NY),Visited),
+          \+ member((NX,NY),[(X,Y)|Path])
+        ),
+        NextStates
+    ),
+    append(Rest, NextStates, NewQueue),
+    bfs(NewQueue, [(X,Y)|Visited], Target, CapA, CapB, Solution).
+
+/* Possible moves */
+
+/* Fill jug A */
+move((X,Y),(CapA,Y),CapA,_) :-
+    X < CapA.
+
+/* Fill jug B */
+move((X,Y),(X,CapB),_,CapB) :-
+    Y < CapB.
+
+/* Empty jug A */
+move((X,Y),(0,Y),_,_) :-
+    X > 0.
+
+/* Empty jug B */
+move((X,Y),(X,0),_,_) :-
+    Y > 0.
+
+/* Pour A -> B */
+move((X,Y),(NX,NY),_,CapB) :-
+    X > 0,
+    Y < CapB,
+    Transfer is min(X, CapB - Y),
+    NX is X - Transfer,
+    NY is Y + Transfer.
+
+/* Pour B -> A */
+move((X,Y),(NX,NY),CapA,_) :-
+    Y > 0,
+    X < CapA,
+    Transfer is min(Y, CapA - X),
+    NX is X + Transfer,
+    NY is Y - Transfer.
+
+/* Print solution path */
+print_solution([]).
+print_solution([(X,Y)|Rest]) :-
+    print_solution(Rest),
+    format('Jug A: ~w , Jug B: ~w~n', [X,Y]).
+OUTPUT:?- solve.
+Jug A: 0 , Jug B: 0
+Jug A: 4 , Jug B: 0
+Jug A: 1 , Jug B: 3
+Jug A: 1 , Jug B: 0
+Jug A: 4 , Jug B: 1
+Jug A: 2 , Jug B: 3

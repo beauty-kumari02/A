@@ -1,0 +1,59 @@
+TOWER OF HANOI
+% Base case: only one disk
+hanoi(1, Source, Destination, _) :-
+    write('Move disk from '),
+    write(Source),
+    write(' to '),
+    write(Destination),
+    nl.
+
+% Recursive case: more than one disk
+hanoi(N, Source, Destination, Auxiliary) :-
+    N > 1,
+    M is N - 1,
+
+    % Step 1: Move N-1 disks from Source to Auxiliary
+    hanoi(M, Source, Auxiliary, Destination),
+
+    % Step 2: Move the largest disk from Source to Destination
+    write('Move disk from '),
+    write(Source),
+    write(' to '),
+    write(Destination),
+    nl,
+
+    % Step 3: Move N-1 disks from Auxiliary to Destination
+    hanoi(M, Auxiliary, Destination, Source).
+    
+OUTPUT:?- hanoi(3, left, right, center).
+Move disk from left to right
+Move disk from left to center
+Move disk from right to center
+Move disk from left to right
+Move disk from center to left
+Move disk from center to right
+Move disk from left to right
+
+2(N-Queen Problem)
+% Entry point: generate a solution for N queens
+n_queen(N, Solution) :-
+    length(Solution, N),
+    Solution ins 1..N,
+    safe_queens(Solution).
+
+% Check that all queens are safely placed
+safe_queens([]).
+safe_queens([Q|Qs]) :-
+    safe_queen(Q, Qs, 1),
+    safe_queens(Qs).
+
+% Ensure one queen does not attack others
+safe_queen(_, [], _).
+safe_queen(Q, [Q1|Qs], D) :-
+    Q #\= Q1,              % not in same column
+    abs(Q - Q1) #\= D,     % not on same diagonal
+    D1 #= D + 1,
+    safe_queen(Q, Qs, D1).
+
+   OUTPUT: ?- n_queen(5, Solution).
+   
